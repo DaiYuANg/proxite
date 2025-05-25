@@ -4,36 +4,57 @@ version: '3'
 
 vars:
   APP_NAME: proxite
-  DOCKER_IMAGE: proxite:latest
   DIST_DIR: dist
+  VERSION: 0.0.1
   GIT_COMMIT:
     sh: git rev-parse --short HEAD
   BUILD_TIME:
     sh: date -u +'%Y-%m-%dT%H:%M:%SZ'
 
 tasks:
+  dev:
+    desc: "dev"
+    cmds:
+      - go tool air
+
   clean:
     desc: "Clean build output directory"
     cmds:
-      - rm -rf {{.dist_dir}}
+      - rm -rf {{.DIST_DIR}}
     silent: true
 
   build-linux:
     desc: "Build binary for Linux (amd64)"
     cmds:
-      - GOOS=linux GOARCH=amd64 go build -o {{.dist_dir}}/{{.app_name}}-linux-amd64 .
+      - GOOS=linux GOARCH=amd64 go build -o {{.DIST_DIR}}/{{.APP_NAME}}{{.VERSION}}-linux-amd64 .
+    silent: true
+
+  build:
+    cmds:
+      - GOOS={{OS}} GOARCH={{ARCH}} go build -trimpath -ldflags="-s -w" -o {{.DIST_DIR}}/{{.APP_NAME}}-{{.VERSION}}-{{OS}}-{{ARCH}} .
+      - |
+        if [ "{{OS}}" != "darwin" ]; then
+          upx -9 {{.DIST_DIR}}/{{.APP_NAME}}-{{.VERSION}}-{{.OS}}-{{.ARCH}}
+        else
+          echo "Skipping upx on macOS"
+        fi
+
+  build-linux-docker:
+    desc: "Build binary for Linux (amd64)"
+    cmds:
+      - GOOS=linux GOARCH={{ARCH}} go build -trimpath -ldflags="-s -w"  -o {{.APP_NAME}} .
     silent: true
 
   build-windows:
     desc: "Build binary for Windows (amd64)"
     cmds:
-      - GOOS=windows GOARCH=amd64 go build -o {{.dist_dir}}/{{.app_name}}-windows-amd64.exe .
+      - GOOS=windows GOARCH=amd64 go build -o {{.DIST_DIR}}/{{.APP_NAME}}-{{.VERSION}}-windows-amd64.exe .
     silent: true
 
   build-darwin:
     desc: "Build binary for macOS (amd64)"
     cmds:
-      - GOOS=darwin GOARCH=amd64 go build -o {{.dist_dir}}/{{.app_name}}-darwin-amd64 .
+      - GOOS=darwin GOARCH=amd64 go build -o {{.DIST_DIR}}/{{.APP_NAME}}{{.VERSION}}-darwin-amd64 .
     silent: true
 
   build-all:
@@ -48,18 +69,14 @@ tasks:
   build:alpine:
     desc: Build alpine image
     cmds:
-      - docker build -f docker/alpine.Dockerfile -t {{.APP_NAME}}:alpine .
+      - docker build -f docker/alpine.Dockerfile -t {{.APP_NAME}}:alpine -t {{.APP_NAME}}:{{.VERSION}}-alpine -t {{.APP_NAME}}:latest .
 
   build:slim:
     desc: Build debian slim image
     cmds:
-      - docker build -f docker/slim.Dockerfile -t {{.APP_NAME}}:slim .
+      - docker build -f docker/slim.Dockerfile -t {{.APP_NAME}}:slim -t {{.APP_NAME}}:{{.VERSION}}-alpine .
 
   build:all:
     desc: Build all image variants
     deps: [ build:alpine, build:slim ]
-
-  docker-build:
-    desc: "build docker container"
-    cmds:
-      - docker build -t {{.DOCKER_IMAGE}} .
+    parallel: true

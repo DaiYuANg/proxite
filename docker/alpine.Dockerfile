@@ -5,12 +5,16 @@ RUN apt install -y git
 
 WORKDIR /app
 
+RUN sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /bin
+
 COPY ../go.mod go.sum ./
 RUN go mod download
 
+COPY Taskfile.yml .
+
 COPY .. .
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o proxite .
+RUN task build-linux-docker
 
 # 运行阶段
 FROM alpine:latest

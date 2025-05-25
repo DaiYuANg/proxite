@@ -6,11 +6,12 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"os"
+	"proxite/module/config"
 )
 
 var Module = fx.Module("logger_module", fx.Provide(newLogger, sugaredLogger), fx.Invoke(deferLogger))
 
-func newLogger() *zap.Logger {
+func newLogger(config *config.Config) *zap.Logger {
 	encoderCfg := zap.NewDevelopmentEncoderConfig()
 	encoderCfg.EncodeLevel = zapcore.CapitalColorLevelEncoder
 

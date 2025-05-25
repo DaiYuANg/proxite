@@ -16,4 +16,5 @@ type Config struct {
 	SpaProxies      []SpaProxy `koanf:"spa_proxies"`
 	Prefork         bool       `koanf:"prefork"`
 	WriteBufferSize int        `koanf:"write.buffer.size"`
+	AccessLog       string     `koanf:"access.log.path"`
 }
