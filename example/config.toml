@@ -1,0 +1,17 @@
+port = 8080
+
+[[spa_proxies]]
+root = "/project1"
+spa_path = "./dist/project1"
+
+[[spa_proxies.proxy]]
+path_prefix = "/api"
+target = "http://localhost:3001"
+
+[[spa_proxies]]
+root = "/project2"
+spa_path = "./dist/project2"
+
+[[spa_proxies.proxy]]
+path_prefix = "/service"
+target = "http://localhost:3002"
