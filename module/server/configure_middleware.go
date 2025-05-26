@@ -80,7 +80,7 @@ func configureFavicon(cfg *config.Config, app *fiber.App) {
 }
 
 func configurePprof(cfg *config.Config, app *fiber.App) {
-	app.Use(pprof.New(pprof.Config{Prefix: "/debug"}))
+	app.Use(pprof.New(pprof.Config{Prefix: "/internal/debug"}))
 }
 
 func configureRequestId(cfg *config.Config, app *fiber.App) {
@@ -90,7 +90,7 @@ func configureRequestId(cfg *config.Config, app *fiber.App) {
 func configurePrometheus(cfg *config.Config, app *fiber.App) {
 	pro := fiberprometheus.New(constant.AppName)
 	prometheus.MustRegister(requestCounter)
-	//pro.RegisterAt(app, "/metrics")
+	pro.RegisterAt(app, "/internal/prometheus")
 	app.Use(pro.Middleware)
 }
 

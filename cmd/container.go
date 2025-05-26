@@ -4,6 +4,7 @@ import (
 	"go.uber.org/fx"
 	"go.uber.org/fx/fxevent"
 	"go.uber.org/zap"
+	"proxite/module/cache"
 	"proxite/module/config"
 	"proxite/module/logger"
 	"proxite/module/server"
@@ -20,6 +21,7 @@ func container(configfile string) *fx.App {
 				fx.ResultTags(`name:"path"`),
 			),
 		),
+		cache.Module,
 		validator.Module,
 		logger.Module,
 		config.Module,

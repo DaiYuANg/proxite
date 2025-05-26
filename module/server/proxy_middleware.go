@@ -3,9 +3,11 @@ package server
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/proxy"
+	"github.com/gofiber/fiber/v2/middleware/timeout"
 	"github.com/samber/lo"
 	"go.uber.org/zap"
 	"proxite/module/config"
+	"time"
 )
 
 func proxyMiddleware(cfg *config.Config, app *fiber.App, log *zap.SugaredLogger) {
@@ -16,11 +18,16 @@ func proxyMiddleware(cfg *config.Config, app *fiber.App, log *zap.SugaredLogger)
 			proxyPath := pathPrefix + "*"
 			targetCopy := target
 
-			app.All(proxyPath, func(ctx *fiber.Ctx) error {
-				path := targetCopy + ctx.Path()
-				log.Debugf("proxy target:%v", path)
-				return proxy.Do(ctx, path)
-			})
+			f := timeout.NewWithContext(
+				func(ctx *fiber.Ctx) error {
+					path := targetCopy + ctx.Path()
+					log.Debugf("proxy target:%v", path)
+					return proxy.Do(ctx, path)
+				},
+				2*time.Second,
+			)
+
+			app.All(proxyPath, f)
 		})
 		app.Static(spa.Root+"*", spa.SpaPath, fiber.Static{
 			ByteRange: true,
