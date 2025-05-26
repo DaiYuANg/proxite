@@ -7,6 +7,7 @@ import (
 	"proxite/module/config"
 	"proxite/module/logger"
 	"proxite/module/server"
+	"proxite/module/validator"
 )
 
 func container(configfile string) *fx.App {
@@ -19,6 +20,7 @@ func container(configfile string) *fx.App {
 				fx.ResultTags(`name:"path"`),
 			),
 		),
+		validator.Module,
 		logger.Module,
 		config.Module,
 		server.Module,

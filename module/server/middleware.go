@@ -4,6 +4,7 @@ import "go.uber.org/fx"
 
 var middleware = fx.Module("middleware",
 	fx.Invoke(
+		proxyMiddleware,
 		configureLoggerMiddleware,
 		configureOtelFiberConfig,
 		configureZapLogger,
@@ -18,6 +19,5 @@ var middleware = fx.Module("middleware",
 		configurePprof,
 		configureRequestId,
 		configureRecover,
-		proxyMiddleware,
 	),
 )

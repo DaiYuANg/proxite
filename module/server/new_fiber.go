@@ -28,6 +28,5 @@ func newFiber(param NewFiberParam) *fiber.App {
 			Prefork:               cfg.Prefork,
 		},
 	)
-
 	return app
 }

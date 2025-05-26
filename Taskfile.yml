@@ -8,8 +8,8 @@ vars:
   VERSION: 0.0.1
   GIT_COMMIT:
     sh: git rev-parse --short HEAD
-  BUILD_TIME:
-    sh: date -u +'%Y-%m-%dT%H:%M:%SZ'
+#  BUILD_TIME:
+#    sh: date -u +'%Y-%m-%dT%H:%M:%SZ'
 
 tasks:
   dev:
@@ -34,7 +34,7 @@ tasks:
       - GOOS={{OS}} GOARCH={{ARCH}} go build -trimpath -ldflags="-s -w" -o {{.DIST_DIR}}/{{.APP_NAME}}-{{.VERSION}}-{{OS}}-{{ARCH}} .
       - |
         if [ "{{OS}}" != "darwin" ]; then
-          upx -9 {{.DIST_DIR}}/{{.APP_NAME}}-{{.VERSION}}-{{.OS}}-{{.ARCH}}
+          upx -9 {{.DIST_DIR}}/{{.APP_NAME}}-{{.VERSION}}-{{OS}}-{{ARCH}}
         else
           echo "Skipping upx on macOS"
         fi
