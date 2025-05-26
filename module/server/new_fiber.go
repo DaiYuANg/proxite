@@ -26,6 +26,7 @@ func newFiber(param NewFiberParam) *fiber.App {
 			AppName:               constant.AppName,
 			WriteBufferSize:       cfg.WriteBufferSize,
 			Prefork:               cfg.Prefork,
+			EnablePrintRoutes:     true,
 		},
 	)
 	return app

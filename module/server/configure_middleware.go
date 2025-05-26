@@ -50,11 +50,21 @@ func configureCors(cfg *config.Config, app *fiber.App) {
 }
 
 func configureMonitor(cfg *config.Config, app *fiber.App) {
-	app.Get("/metrics", monitor.New())
+	group := app.Group("internal")
+	group.Get("metrics", monitor.New())
 }
 
 func configureHealthcheck(cfg *config.Config, app *fiber.App) {
-	app.Use(healthcheck.New())
+	app.Use(healthcheck.New(healthcheck.Config{
+		LivenessProbe: func(c *fiber.Ctx) bool {
+			return true
+		},
+		LivenessEndpoint: "/live",
+		ReadinessProbe: func(c *fiber.Ctx) bool {
+			return true
+		},
+		ReadinessEndpoint: "/ready",
+	}))
 }
 
 func configureHelmet(cfg *config.Config, app *fiber.App) {
@@ -80,7 +90,7 @@ func configureRequestId(cfg *config.Config, app *fiber.App) {
 func configurePrometheus(cfg *config.Config, app *fiber.App) {
 	pro := fiberprometheus.New(constant.AppName)
 	prometheus.MustRegister(requestCounter)
-	pro.RegisterAt(app, "/metrics")
+	//pro.RegisterAt(app, "/metrics")
 	app.Use(pro.Middleware)
 }
 

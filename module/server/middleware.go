@@ -4,12 +4,12 @@ import "go.uber.org/fx"
 
 var middleware = fx.Module("middleware",
 	fx.Invoke(
+		configureMonitor,
 		proxyMiddleware,
 		configureLoggerMiddleware,
 		configureOtelFiberConfig,
 		configureZapLogger,
 		configureCors,
-		configureMonitor,
 		configureHealthcheck,
 		configureCompress,
 		configureFavicon,
