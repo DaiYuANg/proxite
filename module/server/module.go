@@ -13,15 +13,10 @@ import (
 
 var Module = fx.Module("server",
 	fx.Provide(
-		fx.Annotate(
-			templateEngine,
-			fx.ResultTags(`name:"serverTemplateEngine"`),
-		),
-		fx.Annotate(
-			newFiber,
-			fx.ResultTags(`name:"server"`),
-		),
+		templateEngine,
+		newFiber,
 	),
+	middleware,
 	fx.Invoke(
 		startServer,
 	),
@@ -34,7 +29,7 @@ func templateEngine() *html.Engine {
 type StartServerParam struct {
 	fx.In
 	Lifecycle fx.Lifecycle
-	Server    *fiber.App `name:"server"`
+	Server    *fiber.App
 	Cfg       *config.Config
 	Logger    *zap.SugaredLogger
 }

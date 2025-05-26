@@ -62,11 +62,11 @@ func load(k *koanf.Koanf, path string) (*Config, error) {
 
 func mergeSpaProxies(old []SpaProxy, env []SpaProxy) []SpaProxy {
 	rootMap := make(map[string]SpaProxy)
-	for _, sp := range old {
+	lo.ForEach(old, func(sp SpaProxy, index int) {
 		rootMap[sp.Root] = sp
-	}
-	for _, sp := range env {
+	})
+	lo.ForEach(env, func(sp SpaProxy, index int) {
 		rootMap[sp.Root] = sp
-	}
+	})
 	return lo.Values(rootMap)
 }
